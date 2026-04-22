@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タスク管理アプリ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+    }
+
+    /* ========== ログイン画面 ========== */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px;
+      width: 360px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-card h1 {
+      font-size: 22px;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .login-card p {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      border-color: #667eea;
+    }
+
+    .login-error {
+      font-size: 12px;
+      color: #e74c3c;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .login-hint {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+    }
+
+    /* ========== ボード画面 ========== */
+    #board-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .btn-logout {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .board {
+      display: flex;
+      gap: 16px;
+      padding: 24px;
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    /* ========== リスト（列） ========== */
+    .list {
+      background: #ebecf0;
+      border-radius: 10px;
+      width: 300px;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 104px);
+    }
+
+    .list-header {
+      padding: 12px 14px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .list-title-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .list-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #172b4d;
+    }
+
+    .list-count {
+      background: #c1c7d0;
+      color: #172b4d;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 2px 7px;
+    }
+
+    /* ========== ソートコントロール ========== */
+    .sort-bar {
+      padding: 4px 8px 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-sort {
+      padding: 3px 8px;
+      font-size: 11px;
+      border: 1.5px solid #c1c7d0;
+      border-radius: 12px;
+      background: #fff;
+      color: #5e6c84;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 600;
+    }
+
+    .btn-sort:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .btn-sort.active {
+      background: #667eea;
+      border-color: #667eea;
+      color: #fff;
+    }
+
+    .cards-container {
+      padding: 4px 8px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 40px;
+    }
+
+    .cards-container.drag-over {
+      background: rgba(102, 126, 234, 0.06);
+      border-radius: 6px;
+    }
+
+    .drop-indicator {
+      height: 3px;
+      background: #667eea;
+      border-radius: 3px;
+      margin: 2px 0;
+      position: relative;
+      pointer-events: none;
+    }
+
+    .drop-indicator::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #667eea;
+    }
+
+    /* ========== カード ========== */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: move;
+      transition: box-shadow 0.2s, transform 0.1s;
+      position: relative;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .card.dragging {
+      cursor: move;
+      visibility: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      color: #172b4d;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .card-memo {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== 優先度バッジ ========== */
+    .badge-priority {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .priority-high   { background: #fde8e8; color: #c0392b; }
+    .priority-medium { background: #fef3cd; color: #b7770d; }
+    .priority-low    { background: #e8f5e9; color: #27ae60; }
+
+    /* ========== 期限バッジ ========== */
+    .badge-due {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: #e8ecf0;
+      color: #5e6c84;
+    }
+
+    .badge-due.overdue {
+      background: #fde8e8;
+      color: #c0392b;
+    }
+
+    .badge-due.due-soon {
+      background: #fef3cd;
+      color: #b7770d;
+    }
+
+    .card-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: none;
+      gap: 4px;
+      cursor: default;
+    }
+
+    .card:hover .card-actions {
+      display: flex;
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #888;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-icon.delete:hover {
+      background: #fde8e8;
+      color: #e74c3c;
+    }
+
+    /* ========== カード追加ボタン ========== */
+    .add-card-area {
+      padding: 8px;
+    }
+
+    .btn-add-card {
+      width: 100%;
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      color: #5e6c84;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-add-card:hover {
+      background: rgba(9,30,66,0.08);
+      color: #172b4d;
+    }
+
+    /* ========== モーダル ========== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #f4f5f7;
+      border-radius: 12px;
+      width: 500px;
+      max-width: 90vw;
+      padding: 28px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .modal-close:hover {
+      background: #ddd;
+      color: #333;
+    }
+
+    .modal h2 {
+      font-size: 13px;
+      color: #888;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .modal-field {
+      margin-bottom: 16px;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #5e6c84;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-field input,
+    .modal-field textarea,
+    .modal-field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+
+    .modal-field input:focus,
+    .modal-field textarea:focus,
+    .modal-field select:focus {
+      border-color: #667eea;
+    }
+
+    .modal-field textarea {
+      min-height: 80px;
+    }
+
+    .modal-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-row .modal-field {
+      margin-bottom: 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      background: #ebecf0;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #444;
+    }
+
+    .btn-secondary:hover {
+      background: #ddd;
+    }
+
+    .btn-save {
+      padding: 8px 20px;
+      background: #667eea;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-save:hover {
+      background: #5a6fd8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ログイン画面 -->
+  <div id="login-screen">
+    <div class="login-card">
+      <h1>タスク管理アプリ</h1>
+      <p>ログインしてボードを開く</p>
+      <div class="form-group">
+        <label>メールアドレス</label>
+        <input type="email" id="login-email" placeholder="example@email.com">
+      </div>
+      <div class="form-group">
+        <label>パスワード</label>
+        <input type="password" id="login-password" placeholder="パスワードを入力">
+      </div>
+      <p class="login-error" id="login-error">メールアドレスまたはパスワードが違います</p>
+      <button class="btn-primary" onclick="login()">ログイン</button>
+      <p class="login-hint">※ プロトタイプ用: test@example.com / password</p>
+    </div>
+  </div>
+
+  <!-- ボード画面 -->
+  <div id="board-screen">
+    <header>
+      <h1>タスクボード</h1>
+      <div class="header-right">
+        <span id="user-email-display"></span>
+        <button class="btn-logout" onclick="logout()">ログアウト</button>
+      </div>
+    </header>
+    <div class="board" id="board"></div>
+  </div>
+
+  <!-- カード詳細モーダル -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 id="modal-list-name">カードの編集</h2>
+      <div class="modal-field">
+        <label>タイトル</label>
+        <input type="text" id="modal-title" placeholder="カードのタイトル">
+      </div>
+      <div class="modal-field">
+        <label>メモ</label>
+        <textarea id="modal-memo" placeholder="メモを入力（任意）"></textarea>
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>優先度</label>
+          <select id="modal-priority">
+            <option value="">なし</option>
+            <option value="high">🔴 高</option>
+            <option value="medium">🟡 中</option>
+            <option value="low">🟢 低</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>期限</label>
+          <input type="date" id="modal-due">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">キャンセル</button>
+        <button class="btn-save" onclick="saveCard()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 定数 ==========
+    const LISTS = [
+      { id: 'todo',       name: 'To Do' },
+      { id: 'inprogress', name: '進行中' },
+      { id: 'done',       name: '完了' },
+    ];
+
+    const PRIORITY_ORDER = { high: 1, medium: 2, low: 3, '': 4 };
+    const PRIORITY_LABEL = { high: '高', medium: '中', low: '低' };
+
+    // ソート状態（null = 手動, 'priority', 'due'）
+    const sortState = { todo: null, inprogress: null, done: null };
+
+    // ========== データ ==========
+    let cards = [
+      { id: 1, listId: 'todo',       title: 'デザインを考える',     memo: 'カラーパレットとフォントを決める', priority: 'high',   due: '2026-04-30', pos: 0 },
+      { id: 2, listId: 'todo',       title: 'ER図を作成する',       memo: '',                               priority: 'medium', due: '2026-04-25', pos: 1 },
+      { id: 3, listId: 'inprogress', title: '要件定義を書く',       memo: 'ユーザーヒアリングをもとに作成', priority: 'high',   due: '2026-04-22', pos: 0 },
+      { id: 4, listId: 'done',       title: 'リポジトリを作成する', memo: 'GitHubでmainブランチを設定済み', priority: 'low',    due: '',           pos: 0 },
+    ];
+
+    let nextId = 5;
+    let editingCardId = null;
+    let dragCardId = null;
+
+    // ========== 認証 ==========
+    function login() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      if (email === 'test@example.com' && password === 'password') {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('board-screen').style.display = 'flex';
+        document.getElementById('user-email-display').textContent = email;
+        renderBoard();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    function logout() {
+      document.getElementById('board-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('login-error').style.display = 'none';
+    }
+
+    document.getElementById('login-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') login();
+    });
+
+    // ========== ソート ==========
+    function getSortedCards(listId) {
+      const listCards = cards.filter(c => c.listId === listId);
+      const mode = sortState[listId];
+      if (mode === 'priority') {
+        return [...listCards].sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
+      }
+      if (mode === 'due') {
+        return [...listCards].sort((a, b) => {
+          if (!a.due && !b.due) return 0;
+          if (!a.due) return 1;
+          if (!b.due) return -1;
+          return a.due.localeCompare(b.due);
+        });
+      }
+      // 手動モード: pos順
+      return [...listCards].sort((a, b) => a.pos - b.pos);
+    }
+
+    // ボタンを押したとき：すでにアクティブなら null（手動）に戻す
+    function setSort(listId, mode) {
+      sortState[listId] = sortState[listId] === mode ? null : mode;
+      renderBoard();
+    }
+
+    // ========== ボード描画 ==========
+    function renderBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+
+      LISTS.forEach(list => {
+        const listCards = getSortedCards(list.id);
+        const mode = sortState[list.id];
+
+        const listEl = document.createElement('div');
+        listEl.className = 'list';
+        listEl.innerHTML = `
+          <div class="list-header">
+            <div class="list-title-area">
+              <span class="list-title">${list.name}</span>
+              <span class="list-count">${listCards.length}</span>
+            </div>
+          </div>
+          <div class="sort-bar">
+            <button class="btn-sort ${mode === 'priority' ? 'active' : ''}" onclick="setSort('${list.id}', 'priority')">優先度</button>
+            <button class="btn-sort ${mode === 'due'      ? 'active' : ''}" onclick="setSort('${list.id}', 'due')">期限</button>
+          </div>
+          <div class="cards-container" id="cards-${list.id}"></div>
+          <div class="add-card-area">
+            <button class="btn-add-card" onclick="openAddCard('${list.id}')">＋ カードを追加</button>
+          </div>
+        `;
+        board.appendChild(listEl);
+
+        const container = document.getElementById(`cards-${list.id}`);
+        listCards.forEach(card => container.appendChild(createCardEl(card)));
+      });
+    }
+
+    function createCardEl(card) {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.dataset.cardId = card.id;
+
+      const priorityBadge = card.priority
+        ? `<span class="badge-priority priority-${card.priority}">${PRIORITY_LABEL[card.priority]}</span>`
+        : '';
+
+      const dueBadge = card.due ? buildDueBadge(card.due) : '';
+
+      el.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">${escapeHtml(card.title)}</div>
+        </div>
+        ${card.memo ? `<div class="card-memo">${escapeHtml(card.memo)}</div>` : ''}
+        ${(priorityBadge || dueBadge) ? `<div class="card-footer">${priorityBadge}${dueBadge}</div>` : ''}
+        <div class="card-actions">
+          <button class="btn-icon" onclick="openEditCard(${card.id})" title="編集">✏️</button>
+          <button class="btn-icon delete" onclick="deleteCard(${card.id})" title="削除">🗑️</button>
+        </div>
+      `;
+      el.addEventListener('mousedown', e => initDrag(e, card.id));
+      return el;
+    }
+
+    function buildDueBadge(due) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const dueDate = new Date(due);
+      const diff = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      let cls = '';
+      if (diff < 0)      cls = 'overdue';
+      else if (diff <= 3) cls = 'due-soon';
+      const label = due.replace(/-/g, '/');
+      return `<span class="badge-due ${cls}">📅 ${label}</span>`;
+    }
+
+    // ========== カード操作 ==========
+    function openAddCard(listId) {
+      editingCardId = null;
+      const list = LISTS.find(l => l.id === listId);
+      document.getElementById('modal-list-name').textContent = list.name + ' に追加';
+      document.getElementById('modal-title').value = '';
+      document.getElementById('modal-memo').value = '';
+      document.getElementById('modal-priority').value = '';
+      document.getElementById('modal-due').value = '';
+      document.getElementById('modal-overlay').dataset.listId = listId;
+      document.getElementById('modal-overlay').classList.add('active');
+      document.getElementById('modal-title').focus();
+    }
+
+    function openEditCard(cardId) {
+      const card = cards.find(c => c.id === cardId);
+      if (!card) return;
+      editingCardId = cardId;
+      const list = LISTS.find(l => l.id === card.listId);
+      document.getElementById('modal-list-name').textContent = list.name;
+      document.getElementById('modal-title').value = card.title;
+      document.getElementById('modal-memo').value = card.memo;
+      document.getElementById('modal-priority').value = card.priority || '';
+      document.getElementById('modal-due').value = card.due || '';
+      document.getElementById('modal-overlay').classList.add('active');
+      document.getElementById('modal-title').focus();
+    }
+
+    function saveCard() {
+      const title = document.getElementById('modal-title').value.trim();
+      if (!title) { document.getElementById('modal-title').focus(); return; }
+      const memo     = document.getElementById('modal-memo').value.trim();
+      const priority = document.getElementById('modal-priority').value;
+      const due      = document.getElementById('modal-due').value;
+
+      if (editingCardId !== null) {
+        const card = cards.find(c => c.id === editingCardId);
+        if (card) Object.assign(card, { title, memo, priority, due });
+      } else {
+        const listId = document.getElementById('modal-overlay').dataset.listId;
+        const maxPos = cards.filter(c => c.listId === listId).reduce((m, c) => Math.max(m, c.pos), -1);
+        cards.push({ id: nextId++, listId, title, memo, priority, due, pos: maxPos + 1 });
+      }
+      closeModal();
+      renderBoard();
+    }
+
+    function deleteCard(cardId) {
+      if (!confirm('このカードを削除しますか？')) return;
+      cards = cards.filter(c => c.id !== cardId);
+      renderBoard();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active');
+      editingCardId = null;
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ========== ドラッグ＆ドロップ（マウスイベント） ==========
+    let dragState = null;
+
+    function initDrag(e, cardId) {
+      if (e.button !== 0) return;
+      if (e.target.closest('.btn-icon')) return; // 編集・削除ボタンは除外
+      e.preventDefault();
+
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+
+      // 動かすクローンを生成
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll('.card-actions').forEach(n => n.remove());
+      clone.style.cssText = `
+        position: fixed;
+        top: ${rect.top}px;
+        left: ${rect.left}px;
+        width: ${rect.width}px;
+        z-index: 9999;
+        pointer-events: none;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        transform: rotate(1.5deg) scale(1.03);
+        transition: none;
+        cursor: grabbing;
+      `;
+      document.body.appendChild(clone);
+      el.classList.add('dragging');
+
+      dragState = {
+        cardId,
+        clone,
+        original: el,
+        offsetX: e.clientX - rect.left,
+        offsetY: e.clientY - rect.top,
+      };
+      dragCardId = cardId;
+    }
+
+    document.addEventListener('mousemove', e => {
+      if (!dragState) return;
+      e.preventDefault();
+
+      dragState.clone.style.left = (e.clientX - dragState.offsetX) + 'px';
+      dragState.clone.style.top  = (e.clientY - dragState.offsetY) + 'px';
+
+      const listId = getListIdAtPoint(e.clientX, e.clientY);
+      document.querySelectorAll('.cards-container').forEach(c => c.classList.remove('drag-over'));
+
+      if (listId) {
+        const container = document.getElementById(`cards-${listId}`);
+        container.classList.add('drag-over');
+        if (sortState[listId] === null) {
+          showDropIndicator(container, e.clientY);
+        } else {
+          clearDropIndicator();
+        }
+      } else {
+        clearDropIndicator();
+      }
+    });
+
+    document.addEventListener('mouseup', e => {
+      if (!dragState) return;
+
+      const listId = getListIdAtPoint(e.clientX, e.clientY);
+      const card = cards.find(c => c.id === dragState.cardId);
+
+      if (card && listId) {
+        card.listId = listId;
+
+        if (sortState[listId] === null) {
+          const container = document.getElementById(`cards-${listId}`);
+          const siblings = [...container.querySelectorAll('.card:not(.dragging)')];
+          let insertPos = siblings.length;
+          for (let i = 0; i < siblings.length; i++) {
+            const r = siblings[i].getBoundingClientRect();
+            if (e.clientY < r.top + r.height / 2) { insertPos = i; break; }
+          }
+          const listCards = cards.filter(c => c.listId === listId && c.id !== card.id)
+                                 .sort((a, b) => a.pos - b.pos);
+          listCards.splice(insertPos, 0, card);
+          listCards.forEach((c, i) => { c.pos = i; });
+        }
+      }
+
+      dragState.clone.remove();
+      dragState.original.classList.remove('dragging');
+      document.querySelectorAll('.cards-container').forEach(c => c.classList.remove('drag-over'));
+      clearDropIndicator();
+      dragState = null;
+      dragCardId = null;
+
+      if (card && listId) renderBoard();
+    });
+
+    function getListIdAtPoint(x, y) {
+      for (const list of LISTS) {
+        const el = document.getElementById(`cards-${list.id}`);
+        if (!el) continue;
+        const listEl = el.closest('.list');
+        const r = listEl.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return list.id;
+      }
+      return null;
+    }
+
+    function showDropIndicator(container, clientY) {
+      clearDropIndicator();
+      const siblings = [...container.querySelectorAll('.card:not(.dragging)')];
+      let insertBefore = null;
+      for (const sibling of siblings) {
+        const r = sibling.getBoundingClientRect();
+        if (clientY < r.top + r.height / 2) { insertBefore = sibling; break; }
+      }
+      const indicator = document.createElement('div');
+      indicator.className = 'drop-indicator';
+      indicator.id = 'drop-indicator';
+      insertBefore ? container.insertBefore(indicator, insertBefore) : container.appendChild(indicator);
+    }
+
+    function clearDropIndicator() {
+      const el = document.getElementById('drop-indicator');
+      if (el) el.remove();
+    }
+
+    // ========== ユーティリティ ==========
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
