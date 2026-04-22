@@ -1,6 +1,8 @@
 # ER図
 
-## テーブル定義
+[← ドキュメント一覧に戻る](../README.md)
+
+---
 
 ```mermaid
 erDiagram
