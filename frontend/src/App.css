@@ -265,3 +265,99 @@ header h1 {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* モーダル内の横並びフィールド */
+.modal-row {
+  display: flex;
+  gap: 12px;
+}
+.modal-row .modal-field {
+  flex: 1;
+}
+.modal-field select {
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #172b4d;
+  outline: none;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.modal-field select:focus {
+  border-color: #667eea;
+}
+
+/* ソートボタン */
+.sort-controls {
+  display: flex;
+  gap: 4px;
+  padding: 0 4px;
+}
+.sort-btn {
+  flex: 1;
+  background: none;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+  color: #5e6c84;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.sort-btn:hover {
+  background: #dfe1e6;
+  color: #172b4d;
+}
+.sort-btn.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+  font-weight: 600;
+}
+
+/* カードのメタ情報（優先度・期限） */
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.priority-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+.priority-high {
+  background: #fce8e8;
+  color: #c0392b;
+}
+.priority-mid {
+  background: #fff3e0;
+  color: #e67e22;
+}
+.priority-low {
+  background: #e8f5e9;
+  color: #27ae60;
+}
+.due-date {
+  font-size: 11px;
+  color: #5e6c84;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.due-date::before {
+  content: '📅';
+  font-size: 10px;
+}
+.due-date.overdue {
+  color: #c0392b;
+  font-weight: 600;
+}

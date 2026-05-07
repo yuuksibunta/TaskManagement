@@ -6,8 +6,8 @@ import ListColumn from './ListColumn';
 type Props = {
   lists: TaskList[];
   cards: Card[];
-  onCardCreate: (listId: number, title: string, memo: string) => Promise<void>;
-  onCardUpdate: (cardId: number, title: string, memo: string) => Promise<void>;
+  onCardCreate: (listId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
+  onCardUpdate: (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
   onCardMove: (activeId: number, overId: number) => Promise<void>;
 };
 

@@ -6,8 +6,22 @@ import EditCardModal from './EditCardModal';
 
 type Props = {
   card: Card;
-  onCardUpdate: (cardId: number, title: string, memo: string) => Promise<void>;
+  onCardUpdate: (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
 };
+
+const PRIORITY_LABEL: Record<number, string> = { 1: '高', 2: '中', 3: '低' };
+const PRIORITY_CLASS: Record<number, string> = { 1: 'priority-high', 2: 'priority-mid', 3: 'priority-low' };
+
+function formatDueDate(dueDate: string): string {
+  const d = new Date(dueDate);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+function isDueDateOverdue(dueDate: string): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(dueDate) < today;
+}
 
 export default function CardItem({ card, onCardUpdate }: Props) {
   const [isEditing, setIsEditing] = useState(false);
@@ -22,8 +36,8 @@ export default function CardItem({ card, onCardUpdate }: Props) {
     opacity: isDragging ? 0.4 : 1,
   };
 
-  const handleSave = async (title: string, memo: string) => {
-    await onCardUpdate(card.id, title, memo);
+  const handleSave = async (title: string, memo: string, dueDate: string, priority: number | null) => {
+    await onCardUpdate(card.id, title, memo, dueDate, priority);
   };
 
   return (
@@ -32,6 +46,18 @@ export default function CardItem({ card, onCardUpdate }: Props) {
         <div className="card-body">
           <div className="card-title">{card.title}</div>
           {card.memo && <div className="card-memo">{card.memo}</div>}
+          <div className="card-meta">
+            {card.priority != null && (
+              <span className={`priority-badge ${PRIORITY_CLASS[card.priority]}`}>
+                {PRIORITY_LABEL[card.priority]}
+              </span>
+            )}
+            {card.dueDate && (
+              <span className={`due-date ${isDueDateOverdue(card.dueDate) ? 'overdue' : ''}`}>
+                {formatDueDate(card.dueDate)}
+              </span>
+            )}
+          </div>
         </div>
         <button
           className="btn-edit"

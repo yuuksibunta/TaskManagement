@@ -1,6 +1,7 @@
 package com.taskmanagement.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,12 @@ public class Card {
 
     @Column(nullable = false)
     private Integer position;
+
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
+    @Column
+    private Integer priority;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -50,6 +57,10 @@ public class Card {
     public void setMemo(String memo) { this.memo = memo; }
     public Integer getPosition() { return position; }
     public void setPosition(Integer position) { this.position = position; }
+    public LocalDate getDueDate() { return dueDate; }
+    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public Integer getPriority() { return priority; }
+    public void setPriority(Integer priority) { this.priority = priority; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

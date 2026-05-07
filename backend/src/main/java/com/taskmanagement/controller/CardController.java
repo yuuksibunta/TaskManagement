@@ -7,6 +7,7 @@ import com.taskmanagement.repository.TaskListRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,10 @@ public class CardController {
         card.setTitle(body.get("title").toString());
         card.setMemo(body.containsKey("memo") ? body.get("memo").toString() : null);
         card.setPosition(Integer.valueOf(body.get("position").toString()));
+        if (body.containsKey("dueDate") && body.get("dueDate") != null && !body.get("dueDate").toString().isEmpty())
+            card.setDueDate(LocalDate.parse(body.get("dueDate").toString()));
+        if (body.containsKey("priority") && body.get("priority") != null)
+            card.setPriority(Integer.valueOf(body.get("priority").toString()));
         return ResponseEntity.ok(cardRepository.save(card));
     }
 
@@ -59,6 +64,11 @@ public class CardController {
         }
         if (body.containsKey("position"))
             card.setPosition(Integer.valueOf(body.get("position").toString()));
+        if (body.containsKey("dueDate"))
+            card.setDueDate(body.get("dueDate") != null && !body.get("dueDate").toString().isEmpty()
+                ? LocalDate.parse(body.get("dueDate").toString()) : null);
+        if (body.containsKey("priority"))
+            card.setPriority(body.get("priority") != null ? Integer.valueOf(body.get("priority").toString()) : null);
 
         return ResponseEntity.ok(cardRepository.save(card));
     }

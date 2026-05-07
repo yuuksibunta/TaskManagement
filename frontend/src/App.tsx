@@ -31,23 +31,23 @@ export default function App() {
     loadBoard();
   }, []);
 
-  const handleCardCreate = async (listId: number, title: string, memo: string) => {
+  const handleCardCreate = async (listId: number, title: string, memo: string, dueDate: string, priority: number | null) => {
     const position = cards.filter((c) => c.taskList.id === listId).length + 1;
     const res = await fetch('/api/cards', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ listId, title, memo, position }),
+      body: JSON.stringify({ listId, title, memo, position, dueDate, priority }),
     });
     if (!res.ok) throw new Error('カードの作成に失敗しました');
     const newCard: Card = await res.json();
     setCards((prev) => [...prev, newCard]);
   };
 
-  const handleCardUpdate = async (cardId: number, title: string, memo: string) => {
+  const handleCardUpdate = async (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => {
     const res = await fetch(`/api/cards/${cardId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, memo }),
+      body: JSON.stringify({ title, memo, dueDate: dueDate || null, priority }),
     });
     if (!res.ok) throw new Error('カードの更新に失敗しました');
     const updated: Card = await res.json();
@@ -64,7 +64,6 @@ export default function App() {
       .filter((c) => c.taskList.id === targetListId)
       .sort((a, b) => a.position - b.position);
 
-    // 同じリスト内での並び替え
     if (activeCard.taskList.id === targetListId) {
       const activeIndex = targetListCards.findIndex((c) => c.id === activeId);
       const overIndex = targetListCards.findIndex((c) => c.id === overId);
@@ -73,7 +72,6 @@ export default function App() {
       reordered.splice(activeIndex, 1);
       reordered.splice(overIndex, 0, activeCard);
 
-      // optimistic update
       const updatedCards = cards.map((c) => {
         const idx = reordered.findIndex((r) => r.id === c.id);
         if (idx !== -1) return { ...c, position: idx + 1 };
@@ -81,7 +79,6 @@ export default function App() {
       });
       setCards(updatedCards);
 
-      // APIに順番を保存
       await Promise.all(
         reordered.map((card, idx) =>
           fetch(`/api/cards/${card.id}`, {
@@ -92,11 +89,9 @@ export default function App() {
         )
       );
     } else {
-      // 別リストへの移動
       const overIndex = targetListCards.findIndex((c) => c.id === overId);
       const newPosition = overIndex + 1;
 
-      // optimistic update
       setCards((prev) =>
         prev.map((c) => {
           if (c.id === activeId) {
