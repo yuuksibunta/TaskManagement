@@ -2,6 +2,7 @@
 
 | ドキュメント | 説明 |
 |---|---|
+| [技術スタック](tech-stack.md) | 使用技術・バージョン・起動方法 |
 | [機能要件](requirements/functional.md) | アプリで実現する機能の定義 |
 | [非機能要件](requirements/non-functional.md) | パフォーマンス・セキュリティなど品質の定義 |
 | [画面一覧](requirements/screens.md) | 画面の種類と説明 |
