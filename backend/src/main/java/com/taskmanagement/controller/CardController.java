@@ -42,6 +42,27 @@ public class CardController {
         return ResponseEntity.ok(cardRepository.save(card));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        Card card = cardRepository.findById(id).orElse(null);
+        if (card == null) return ResponseEntity.notFound().build();
+
+        if (body.containsKey("title"))
+            card.setTitle(body.get("title").toString());
+        if (body.containsKey("memo"))
+            card.setMemo(body.get("memo") != null ? body.get("memo").toString() : null);
+        if (body.containsKey("listId")) {
+            Long listId = Long.valueOf(body.get("listId").toString());
+            TaskList taskList = listRepository.findById(listId).orElse(null);
+            if (taskList == null) return ResponseEntity.badRequest().body("List not found");
+            card.setTaskList(taskList);
+        }
+        if (body.containsKey("position"))
+            card.setPosition(Integer.valueOf(body.get("position").toString()));
+
+        return ResponseEntity.ok(cardRepository.save(card));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         cardRepository.deleteById(id);

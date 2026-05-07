@@ -20,3 +20,10 @@ export type CreateCardInput = {
   memo: string;
   position: number;
 };
+
+export type UpdateCardInput = {
+  title?: string;
+  memo?: string | null;
+  listId?: number;
+  position?: number;
+};

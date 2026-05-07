@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { TaskList, Card } from './types';
 import CardItem from './CardItem';
 import AddCardModal from './AddCardModal';
@@ -7,9 +8,10 @@ type Props = {
   list: TaskList;
   cards: Card[];
   onCardCreate: (listId: number, title: string, memo: string) => Promise<void>;
+  onCardUpdate: (cardId: number, title: string, memo: string) => Promise<void>;
 };
 
-export default function ListColumn({ list, cards, onCardCreate }: Props) {
+export default function ListColumn({ list, cards, onCardCreate, onCardUpdate }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const listCards = cards
@@ -27,9 +29,11 @@ export default function ListColumn({ list, cards, onCardCreate }: Props) {
         <span className="list-count">{listCards.length}</span>
       </div>
       <div className="cards-container">
-        {listCards.map((card) => (
-          <CardItem key={card.id} card={card} />
-        ))}
+        <SortableContext items={listCards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+          {listCards.map((card) => (
+            <CardItem key={card.id} card={card} onCardUpdate={onCardUpdate} />
+          ))}
+        </SortableContext>
       </div>
       <div className="add-card-area">
         <button className="btn-add-card" onClick={() => setIsModalOpen(true)}>
