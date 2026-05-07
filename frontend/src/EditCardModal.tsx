@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+import type { Card } from './types';
 
 type Props = {
-  listName: string;
+  card: Card;
   onSave: (title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
   onClose: () => void;
 };
 
-export default function AddCardModal({ listName, onSave, onClose }: Props) {
-  const [title, setTitle] = useState('');
-  const [memo, setMemo] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [priority, setPriority] = useState<number | null>(null);
+export default function EditCardModal({ card, onSave, onClose }: Props) {
+  const [title, setTitle] = useState(card.title);
+  const [memo, setMemo] = useState(card.memo ?? '');
+  const [dueDate, setDueDate] = useState(card.dueDate ?? '');
+  const [priority, setPriority] = useState<number | null>(card.priority ?? null);
   const [saving, setSaving] = useState(false);
-  const [titleError, setTitleError] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -26,11 +26,9 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
 
   const handleSave = async () => {
     if (!title.trim()) {
-      setTitleError(true);
       titleRef.current?.focus();
       return;
     }
-    setTitleError(false);
     setSaving(true);
     try {
       await onSave(title.trim(), memo.trim(), dueDate, priority);
@@ -48,19 +46,17 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>✕</button>
-        <h2>{listName} に追加</h2>
+        <h2>カードを編集</h2>
         <div className="modal-field">
           <label>タイトル</label>
           <input
             ref={titleRef}
             type="text"
             value={title}
-            onChange={(e) => { setTitle(e.target.value); setTitleError(false); }}
+            onChange={(e) => setTitle(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="カードのタイトル"
-            style={titleError ? { borderColor: '#e74c3c' } : undefined}
           />
-          {titleError && <span className="field-error">タイトルは必須です</span>}
         </div>
         <div className="modal-field">
           <label>メモ（任意）</label>
@@ -96,7 +92,7 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
         <div className="modal-actions">
           <button className="btn-secondary" onClick={onClose}>キャンセル</button>
           <button className="btn-save" onClick={handleSave} disabled={saving}>
-            {saving ? '保存中...' : '追加'}
+            {saving ? '保存中...' : '保存'}
           </button>
         </div>
       </div>
