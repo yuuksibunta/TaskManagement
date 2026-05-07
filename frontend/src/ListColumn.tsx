@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { TaskList, Card } from './types';
 import CardItem from './CardItem';
 import AddCardModal from './AddCardModal';
 
-type SortKey = 'position' | 'dueDate' | 'priority';
+type SortKey = 'dueDate' | 'priority';
 
 type Props = {
   list: TaskList;
@@ -13,8 +14,8 @@ type Props = {
   onCardUpdate: (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
 };
 
-function sortCards(cards: Card[], key: SortKey): Card[] {
-  if (key === 'position') return [...cards].sort((a, b) => a.position - b.position);
+function sortCards(cards: Card[], key: SortKey | null): Card[] {
+  if (key === null) return [...cards].sort((a, b) => a.position - b.position);
   if (key === 'dueDate') {
     return [...cards].sort((a, b) => {
       if (!a.dueDate && !b.dueDate) return a.position - b.position;
@@ -23,7 +24,6 @@ function sortCards(cards: Card[], key: SortKey): Card[] {
       return a.dueDate.localeCompare(b.dueDate);
     });
   }
-  // priority: 1=高 が先
   return [...cards].sort((a, b) => {
     if (a.priority == null && b.priority == null) return a.position - b.position;
     if (a.priority == null) return 1;
@@ -33,14 +33,15 @@ function sortCards(cards: Card[], key: SortKey): Card[] {
 }
 
 const SORT_LABELS: Record<SortKey, string> = {
-  position: '手動',
   dueDate: '期限',
   priority: '優先度',
 };
 
 export default function ListColumn({ list, cards, onCardCreate, onCardUpdate }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortKey, setSortKey] = useState<SortKey>('position');
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+
+  const { setNodeRef: setDropRef } = useDroppable({ id: `list-${list.id}` });
 
   const listCards = cards.filter((c) => c.taskList.id === list.id);
   const sortedCards = sortCards(listCards, sortKey);
@@ -56,17 +57,17 @@ export default function ListColumn({ list, cards, onCardCreate, onCardUpdate }: 
         <span className="list-count">{listCards.length}</span>
       </div>
       <div className="sort-controls">
-        {(['position', 'dueDate', 'priority'] as SortKey[]).map((key) => (
+        {(['dueDate', 'priority'] as SortKey[]).map((key) => (
           <button
             key={key}
             className={`sort-btn ${sortKey === key ? 'active' : ''}`}
-            onClick={() => setSortKey(key)}
+            onClick={() => setSortKey(sortKey === key ? null : key)}
           >
             {SORT_LABELS[key]}
           </button>
         ))}
       </div>
-      <div className="cards-container">
+      <div className="cards-container" ref={setDropRef}>
         <SortableContext
           items={sortedCards.map((c) => c.id)}
           strategy={verticalListSortingStrategy}

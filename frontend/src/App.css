@@ -50,6 +50,15 @@ header h1 {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: calc(100vh - 80px);
+}
+
+.cards-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .list-header {
   display: flex;
@@ -71,20 +80,12 @@ header h1 {
   font-weight: 600;
 }
 
-.cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
-}
-
 .card {
   background: white;
   border-radius: 6px;
   padding: 10px 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  cursor: grab;
+  cursor: move;
   transition: box-shadow 0.15s;
   display: flex;
   align-items: flex-start;
@@ -94,7 +95,7 @@ header h1 {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 .card:active {
-  cursor: grabbing;
+  cursor: move;
 }
 .card-body {
   flex: 1;
@@ -123,7 +124,7 @@ header h1 {
   background: none;
   border: none;
   font-size: 14px;
-  color: #b3b9c4;
+  color: #e07b39;
   cursor: pointer;
   padding: 2px 4px;
   border-radius: 4px;
@@ -135,8 +136,8 @@ header h1 {
   opacity: 1;
 }
 .btn-edit:hover {
-  color: #667eea;
-  background: #f0f2f5;
+  color: #c05a1f;
+  background: #fdf0e8;
 }
 
 /* カード追加ボタン */
@@ -204,6 +205,11 @@ header h1 {
   flex-direction: column;
   gap: 6px;
   margin-bottom: 14px;
+}
+.field-error {
+  font-size: 12px;
+  color: #e74c3c;
+  font-weight: 500;
 }
 .modal-field label {
   font-size: 12px;
@@ -294,22 +300,24 @@ header h1 {
 /* ソートボタン */
 .sort-controls {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   padding: 0 4px;
 }
 .sort-btn {
-  flex: 1;
-  background: none;
-  border: 1px solid #dfe1e6;
-  border-radius: 4px;
-  padding: 3px 6px;
+  background: white;
+  border: 1px solid #c1c7d0;
+  border-radius: 12px;
+  padding: 3px 10px;
   font-size: 11px;
   color: #5e6c84;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 .sort-btn:hover {
-  background: #dfe1e6;
+  background: #f4f5f7;
+  border-color: #8993a4;
   color: #172b4d;
 }
 .sort-btn.active {
@@ -317,6 +325,7 @@ header h1 {
   border-color: #667eea;
   color: white;
   font-weight: 600;
+  box-shadow: 0 1px 4px rgba(102,126,234,0.4);
 }
 
 /* カードのメタ情報（優先度・期限） */

@@ -11,6 +11,7 @@ type Props = {
 
 const PRIORITY_LABEL: Record<number, string> = { 1: '高', 2: '中', 3: '低' };
 const PRIORITY_CLASS: Record<number, string> = { 1: 'priority-high', 2: 'priority-mid', 3: 'priority-low' };
+const PRIORITY_ICON: Record<number, string> = { 1: '🔴', 2: '🟡', 3: '🟢' };
 
 function formatDueDate(dueDate: string): string {
   const d = new Date(dueDate);
@@ -49,7 +50,7 @@ export default function CardItem({ card, onCardUpdate }: Props) {
           <div className="card-meta">
             {card.priority != null && (
               <span className={`priority-badge ${PRIORITY_CLASS[card.priority]}`}>
-                {PRIORITY_LABEL[card.priority]}
+                {PRIORITY_ICON[card.priority]} {PRIORITY_LABEL[card.priority]}
               </span>
             )}
             {card.dueDate && (

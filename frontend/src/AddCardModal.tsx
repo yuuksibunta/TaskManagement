@@ -12,6 +12,7 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
   const [dueDate, setDueDate] = useState('');
   const [priority, setPriority] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [titleError, setTitleError] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -25,9 +26,11 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
 
   const handleSave = async () => {
     if (!title.trim()) {
+      setTitleError(true);
       titleRef.current?.focus();
       return;
     }
+    setTitleError(false);
     setSaving(true);
     try {
       await onSave(title.trim(), memo.trim(), dueDate, priority);
@@ -52,10 +55,12 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
             ref={titleRef}
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => { setTitle(e.target.value); setTitleError(false); }}
             onKeyDown={handleKeyDown}
             placeholder="カードのタイトル"
+            style={titleError ? { borderColor: '#e74c3c' } : undefined}
           />
+          {titleError && <span className="field-error">タイトルは必須です</span>}
         </div>
         <div className="modal-field">
           <label>メモ（任意）</label>
@@ -82,9 +87,9 @@ export default function AddCardModal({ listName, onSave, onClose }: Props) {
               onChange={(e) => setPriority(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">未設定</option>
-              <option value="1">高</option>
-              <option value="2">中</option>
-              <option value="3">低</option>
+              <option value="1">🔴 高</option>
+              <option value="2">🟡 中</option>
+              <option value="3">🟢 低</option>
             </select>
           </div>
         </div>

@@ -83,9 +83,9 @@ export default function EditCardModal({ card, onSave, onClose }: Props) {
               onChange={(e) => setPriority(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">未設定</option>
-              <option value="1">高</option>
-              <option value="2">中</option>
-              <option value="3">低</option>
+              <option value="1">🔴 高</option>
+              <option value="2">🟡 中</option>
+              <option value="3">🟢 低</option>
             </select>
           </div>
         </div>

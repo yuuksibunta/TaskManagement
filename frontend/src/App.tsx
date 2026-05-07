@@ -54,8 +54,23 @@ export default function App() {
     setCards((prev) => prev.map((c) => (c.id === cardId ? updated : c)));
   };
 
-  const handleCardMove = async (activeId: number, overId: number) => {
+  const handleCardMove = async (activeId: number, overId: number | string) => {
     const activeCard = cards.find((c) => c.id === activeId);
+
+    if (typeof overId === 'string' && overId.startsWith('list-')) {
+      const targetListId = parseInt(overId.replace('list-', ''));
+      const targetList = lists.find((l) => l.id === targetListId);
+      if (!activeCard || !targetList) return;
+      const newPosition = cards.filter((c) => c.taskList.id === targetListId).length + 1;
+      setCards((prev) => prev.map((c) => c.id === activeId ? { ...c, taskList: targetList, position: newPosition } : c));
+      await fetch(`/api/cards/${activeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listId: targetListId, position: newPosition }),
+      });
+      return;
+    }
+
     const overCard = cards.find((c) => c.id === overId);
     if (!activeCard || !overCard) return;
 
