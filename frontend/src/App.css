@@ -106,3 +106,130 @@ header h1 {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+
+/* カード追加ボタン */
+.add-card-area {
+  padding: 4px 0;
+}
+.btn-add-card {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #5e6c84;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-add-card:hover {
+  background: #dfe1e6;
+  color: #172b4d;
+}
+
+/* モーダル */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  width: 420px;
+  max-width: 90vw;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+.modal h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #172b4d;
+}
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #5e6c84;
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:hover {
+  color: #172b4d;
+}
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.modal-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5e6c84;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.modal-field input,
+.modal-field textarea {
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #172b4d;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.modal-field input:focus,
+.modal-field textarea:focus {
+  border-color: #667eea;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+.btn-secondary {
+  background: none;
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #5e6c84;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-secondary:hover {
+  background: #f4f5f7;
+}
+.btn-save {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-save:hover {
+  opacity: 0.9;
+}
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

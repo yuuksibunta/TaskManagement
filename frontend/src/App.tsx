@@ -31,6 +31,18 @@ export default function App() {
     loadBoard();
   }, []);
 
+  const handleCardCreate = async (listId: number, title: string, memo: string) => {
+    const position = cards.filter((c) => c.taskList.id === listId).length + 1;
+    const res = await fetch('/api/cards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ listId, title, memo, position }),
+    });
+    if (!res.ok) throw new Error('カードの作成に失敗しました');
+    const newCard: Card = await res.json();
+    setCards((prev) => [...prev, newCard]);
+  };
+
   if (loading) return <div className="status-message">読み込み中...</div>;
   if (error) return <div className="status-message error">{error}</div>;
 
@@ -39,7 +51,7 @@ export default function App() {
       <header>
         <h1>タスクボード</h1>
       </header>
-      <Board lists={lists} cards={cards} />
+      <Board lists={lists} cards={cards} onCardCreate={handleCardCreate} />
     </div>
   );
 }

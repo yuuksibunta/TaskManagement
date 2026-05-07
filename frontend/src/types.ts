@@ -13,3 +13,10 @@ export type Card = {
   createdAt: string | null;
   updatedAt: string | null;
 };
+
+export type CreateCardInput = {
+  listId: number;
+  title: string;
+  memo: string;
+  position: number;
+};

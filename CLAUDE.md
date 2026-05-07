@@ -51,16 +51,50 @@
 
 ## 技術スタック・起動方法
 
-- Spring Boot 3.5.0 / Java 21 / Gradle
-- PostgreSQL 16（Docker、ポート **5433**）
+- **バックエンド**: Spring Boot 3.5.0 / Java 21 / Gradle
+- **フロントエンド**: React 19 / TypeScript 6.0 / Vite 8
+- **DB**: PostgreSQL 16（Docker、ポート **5433**）
 
 ```bash
 # DB起動
 docker compose up -d
 
-# アプリ起動（backendディレクトリで）
+# バックエンド起動（backendディレクトリで）
 java -Xms64m -Xmx192m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC \
   -jar build/libs/backend-0.0.1-SNAPSHOT.jar
+
+# フロントエンド起動（frontendディレクトリで）
+npm run dev
 ```
 
+| サーバー | URL |
+|---------|-----|
+| フロントエンド | http://localhost:5173 |
+| バックエンドAPI | http://localhost:8080/api |
+
 > `./gradlew bootRun` はメモリ不足でクラッシュするため使用禁止。JARの直接実行を使うこと。
+
+---
+
+## アーキテクチャ
+
+フロントエンドとバックエンドは分離構成。開発時はVite（5173）が `/api/**` リクエストをSpring Boot（8080）にプロキシ転送する（`frontend/vite.config.ts` 参照）。
+
+```
+frontend/src/
+├── types.ts        # APIレスポンスの型定義（TaskList, Card）
+├── App.tsx         # APIフェッチ・state管理のルート
+├── Board.tsx       # リスト列の横並び
+├── ListColumn.tsx  # 1列（リスト名＋カード一覧）
+└── CardItem.tsx    # カード1枚
+
+backend/src/main/java/com/taskmanagement/
+├── config/         # CorsConfig（全APIにCORSを適用）
+├── controller/     # CardController, TaskListController
+├── entity/         # Card, TaskList, User
+└── repository/     # JPA Repository
+```
+
+- データは `App.tsx` でフェッチし、Props でコンポーネントツリーに流す
+- バックエンドはJSONのみ返すREST API（HTMLは返さない）
+- 型インポートは `import type { ... }` を使うこと（`verbatimModuleSyntax: true` のため）
