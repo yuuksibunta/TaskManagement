@@ -68,6 +68,7 @@ export default function CardItem({ card, onCardUpdate, onCardDelete }: Props) {
             className="btn-edit"
             onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
             onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           >
             ✎
           </button>
@@ -75,6 +76,7 @@ export default function CardItem({ card, onCardUpdate, onCardDelete }: Props) {
             className="btn-delete"
             onClick={(e) => { e.stopPropagation(); setIsDeleting(true); }}
             onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           >
             🗑
           </button>
