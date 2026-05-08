@@ -90,6 +90,8 @@ header h1 {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  -webkit-touch-callout: none;
+  touch-action: none;
 }
 .card:hover {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
@@ -398,4 +400,50 @@ header h1 {
 .due-date.overdue {
   color: #c0392b;
   font-weight: 600;
+}
+
+/* ===== モバイル対応 (640px以下) ===== */
+@media (max-width: 640px) {
+  header {
+    padding: 12px 16px;
+  }
+
+  .board {
+    flex-direction: column;
+    padding: 12px;
+    overflow-x: hidden;
+    gap: 12px;
+  }
+
+  .list {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+  }
+
+  .cards-container {
+    overflow-y: visible;
+    flex: unset;
+  }
+
+  /* 編集・削除ボタンをモバイルでは常時表示（hoverが使えないため） */
+  .card-actions {
+    opacity: 1;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 6px 8px;
+  }
+
+  .modal {
+    width: 92vw;
+  }
+
+  /* iOSの自動ズームを防ぐためフォントサイズを16px以上に */
+  .modal-field input,
+  .modal-field textarea,
+  .modal-field select {
+    font-size: 16px;
+  }
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
+import { DndContext, closestCorners, DragOverlay, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import type { TaskList, Card } from './types';
 import ListColumn from './ListColumn';
@@ -25,6 +25,15 @@ type Props = {
 export default function Board({ lists, cards, onCardCreate, onCardUpdate, onCardDelete, onCardMove }: Props) {
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const sortedLists = [...lists].sort((a, b) => a.position - b.position);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveCard(cards.find((c) => c.id === event.active.id) ?? null);
@@ -38,7 +47,7 @@ export default function Board({ lists, cards, onCardCreate, onCardUpdate, onCard
   };
 
   return (
-    <DndContext collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="board">
         {sortedLists.map((list) => (
           <ListColumn

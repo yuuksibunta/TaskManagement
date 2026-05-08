@@ -46,7 +46,7 @@ export default function CardItem({ card, onCardUpdate, onCardDelete }: Props) {
 
   return (
     <>
-      <div ref={setNodeRef} style={style} className="card" {...attributes} {...listeners}>
+      <div ref={setNodeRef} style={style} className="card" {...attributes} {...listeners} onContextMenu={(e) => e.preventDefault()}>
         <div className="card-body">
           <div className="card-title">{card.title}</div>
           {card.memo && <div className="card-memo">{card.memo}</div>}
@@ -68,6 +68,7 @@ export default function CardItem({ card, onCardUpdate, onCardDelete }: Props) {
             className="btn-edit"
             onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
             onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           >
             ✎
           </button>
@@ -75,6 +76,7 @@ export default function CardItem({ card, onCardUpdate, onCardDelete }: Props) {
             className="btn-delete"
             onClick={(e) => { e.stopPropagation(); setIsDeleting(true); }}
             onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           >
             🗑
           </button>

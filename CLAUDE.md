@@ -82,16 +82,19 @@ npm run dev
 
 ```
 frontend/src/
-├── types.ts        # APIレスポンスの型定義（TaskList, Card）
-├── App.tsx         # APIフェッチ・state管理のルート
-├── Board.tsx       # リスト列の横並び
-├── ListColumn.tsx  # 1列（リスト名＋カード一覧）
-└── CardItem.tsx    # カード1枚
+├── types.ts              # APIレスポンスの型定義（TaskList, Card）
+├── App.tsx               # APIフェッチ・state管理のルート
+├── Board.tsx             # リスト列の横並び・DnDコンテキスト
+├── ListColumn.tsx        # 1列（リスト名＋カード一覧）
+├── CardItem.tsx          # カード1枚
+├── AddCardModal.tsx      # カード追加モーダル
+├── EditCardModal.tsx     # カード編集モーダル
+└── DeleteConfirmModal.tsx # 削除確認モーダル
 
 backend/src/main/java/com/taskmanagement/
 ├── config/         # CorsConfig（全APIにCORSを適用）
 ├── controller/     # CardController, TaskListController
-├── entity/         # Card, TaskList, User
+├── entity/         # Card, TaskList
 └── repository/     # JPA Repository
 ```
 
