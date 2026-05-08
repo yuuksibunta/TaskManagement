@@ -42,7 +42,7 @@ header h1 {
 }
 
 .list {
-  background: #ebecf0;
+  background: #d5d8e0;
   border-radius: 8px;
   width: 300px;
   min-width: 300px;
@@ -118,9 +118,21 @@ header h1 {
   -webkit-box-orient: vertical;
 }
 
+/* カードアクションボタン群 */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.card:hover .card-actions {
+  opacity: 1;
+}
+
 /* 編集ボタン */
 .btn-edit {
-  flex-shrink: 0;
   background: none;
   border: none;
   font-size: 14px;
@@ -128,16 +140,33 @@ header h1 {
   cursor: pointer;
   padding: 2px 4px;
   border-radius: 4px;
-  opacity: 0;
-  transition: opacity 0.15s, color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s;
   line-height: 1;
-}
-.card:hover .btn-edit {
-  opacity: 1;
 }
 .btn-edit:hover {
   color: #c05a1f;
   background: #fdf0e8;
+}
+.btn-delete {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+.btn-delete:hover {
+  color: #c0392b;
+  background: #fdecea;
+}
+.delete-confirm-message {
+  font-size: 14px;
+  color: #172b4d;
+  line-height: 1.7;
+  margin-bottom: 20px;
 }
 
 /* カード追加ボタン */

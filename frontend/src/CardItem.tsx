@@ -3,10 +3,12 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Card } from './types';
 import EditCardModal from './EditCardModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 type Props = {
   card: Card;
   onCardUpdate: (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
+  onCardDelete: (cardId: number) => Promise<void>;
 };
 
 const PRIORITY_LABEL: Record<number, string> = { 1: '高', 2: '中', 3: '低' };
@@ -24,8 +26,9 @@ function isDueDateOverdue(dueDate: string): boolean {
   return new Date(dueDate) < today;
 }
 
-export default function CardItem({ card, onCardUpdate }: Props) {
+export default function CardItem({ card, onCardUpdate, onCardDelete }: Props) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
@@ -60,22 +63,35 @@ export default function CardItem({ card, onCardUpdate }: Props) {
             )}
           </div>
         </div>
-        <button
-          className="btn-edit"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsEditing(true);
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          ✎
-        </button>
+        <div className="card-actions">
+          <button
+            className="btn-edit"
+            onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            ✎
+          </button>
+          <button
+            className="btn-delete"
+            onClick={(e) => { e.stopPropagation(); setIsDeleting(true); }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            🗑
+          </button>
+        </div>
       </div>
       {isEditing && (
         <EditCardModal
           card={card}
           onSave={handleSave}
           onClose={() => setIsEditing(false)}
+        />
+      )}
+      {isDeleting && (
+        <DeleteConfirmModal
+          card={card}
+          onConfirm={() => onCardDelete(card.id)}
+          onClose={() => setIsDeleting(false)}
         />
       )}
     </>
