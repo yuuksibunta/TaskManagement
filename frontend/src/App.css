@@ -90,6 +90,8 @@ header h1 {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  -webkit-touch-callout: none;
+  touch-action: none;
 }
 .card:hover {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
@@ -436,5 +438,12 @@ header h1 {
 
   .modal {
     width: 92vw;
+  }
+
+  /* iOSの自動ズームを防ぐためフォントサイズを16px以上に */
+  .modal-field input,
+  .modal-field textarea,
+  .modal-field select {
+    font-size: 16px;
   }
 }
