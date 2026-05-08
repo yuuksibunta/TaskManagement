@@ -12,6 +12,7 @@ type Props = {
   cards: Card[];
   onCardCreate: (listId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
   onCardUpdate: (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
+  onCardDelete: (cardId: number) => Promise<void>;
 };
 
 function sortCards(cards: Card[], key: SortKey | null): Card[] {
@@ -37,7 +38,7 @@ const SORT_LABELS: Record<SortKey, string> = {
   priority: '優先度',
 };
 
-export default function ListColumn({ list, cards, onCardCreate, onCardUpdate }: Props) {
+export default function ListColumn({ list, cards, onCardCreate, onCardUpdate, onCardDelete }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
 
@@ -73,7 +74,7 @@ export default function ListColumn({ list, cards, onCardCreate, onCardUpdate }: 
           strategy={verticalListSortingStrategy}
         >
           {sortedCards.map((card) => (
-            <CardItem key={card.id} card={card} onCardUpdate={onCardUpdate} />
+            <CardItem key={card.id} card={card} onCardUpdate={onCardUpdate} onCardDelete={onCardDelete} />
           ))}
         </SortableContext>
       </div>

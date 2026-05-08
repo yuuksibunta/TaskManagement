@@ -54,6 +54,12 @@ export default function App() {
     setCards((prev) => prev.map((c) => (c.id === cardId ? updated : c)));
   };
 
+  const handleCardDelete = async (cardId: number) => {
+    const res = await fetch(`/api/cards/${cardId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('カードの削除に失敗しました');
+    setCards((prev) => prev.filter((c) => c.id !== cardId));
+  };
+
   const handleCardMove = async (activeId: number, overId: number | string) => {
     const activeCard = cards.find((c) => c.id === activeId);
 
@@ -140,6 +146,7 @@ export default function App() {
         cards={cards}
         onCardCreate={handleCardCreate}
         onCardUpdate={handleCardUpdate}
+        onCardDelete={handleCardDelete}
         onCardMove={handleCardMove}
       />
     </div>

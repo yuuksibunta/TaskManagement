@@ -18,10 +18,11 @@ type Props = {
   cards: Card[];
   onCardCreate: (listId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
   onCardUpdate: (cardId: number, title: string, memo: string, dueDate: string, priority: number | null) => Promise<void>;
+  onCardDelete: (cardId: number) => Promise<void>;
   onCardMove: (activeId: number, overId: number | string) => Promise<void>;
 };
 
-export default function Board({ lists, cards, onCardCreate, onCardUpdate, onCardMove }: Props) {
+export default function Board({ lists, cards, onCardCreate, onCardUpdate, onCardDelete, onCardMove }: Props) {
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const sortedLists = [...lists].sort((a, b) => a.position - b.position);
 
@@ -46,6 +47,7 @@ export default function Board({ lists, cards, onCardCreate, onCardUpdate, onCard
             cards={cards}
             onCardCreate={onCardCreate}
             onCardUpdate={onCardUpdate}
+            onCardDelete={onCardDelete}
           />
         ))}
       </div>
